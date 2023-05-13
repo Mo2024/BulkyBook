@@ -35,7 +35,6 @@ namespace BulkyBookWeb.Controllers
             {
                 ModelState.AddModelError("CustomError", "The Display Order cannot exactly match the Name.");
                 //ModelState.AddModelError("name", "The Display Order cannot exactly match the Name.");
-
             }
             if (ModelState.IsValid)
             {
@@ -72,7 +71,6 @@ namespace BulkyBookWeb.Controllers
             {
                 ModelState.AddModelError("CustomError", "The Display Order cannot exactly match the Name.");
                 //ModelState.AddModelError("name", "The Display Order cannot exactly match the Name.");
-
             }
             if (ModelState.IsValid)
             {

@@ -9,10 +9,13 @@ namespace BulkyBookWeb.Controllers
     public class AuthController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly PasswordHasher<User> _passwordHasher;
 
         public AuthController(ApplicationDbContext db)
         {
             _db = db;
+            _passwordHasher = new PasswordHasher<User>();
+
         }
 
         //GET Register
@@ -33,16 +36,11 @@ namespace BulkyBookWeb.Controllers
                 user.Password = obj.Password;
                 user.Username = obj.Username;
 
-                var passwordHasher = new PasswordHasher<User>();
-                user.Password = passwordHasher.HashPassword(user, obj.Password);
+                user.Password = _passwordHasher.HashPassword(user, obj.Password);
 
                 _db.Add(user);
                 _db.SaveChanges();
-
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
-
-
-
                 return RedirectToAction("Index", "Home");
 
 
@@ -75,8 +73,7 @@ namespace BulkyBookWeb.Controllers
                 }
                 else
                 {
-                    var passwordHasher = new PasswordHasher<User>();
-                    var passwordVerificationResult = passwordHasher.VerifyHashedPassword(User, User.Password, obj.Password);
+                    var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(User, User.Password, obj.Password);
                     if (passwordVerificationResult == PasswordVerificationResult.Success)
                     {
                         HttpContext.Session.SetString("UserId", User.Id.ToString());
