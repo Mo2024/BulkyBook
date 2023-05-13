@@ -2,7 +2,7 @@
 using BulkyBookWeb.Models;
 using Microsoft.AspNetCore.Identity;
 using BulkyBookWeb.Data;
-
+using BulkyBookWeb.Services;
 
 namespace BulkyBookWeb.Controllers
 {
@@ -10,10 +10,14 @@ namespace BulkyBookWeb.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly PasswordHasher<User> _passwordHasher;
+        private readonly IEmailSenderService _emailSender;
+        private readonly IGenerateTokenService _generateToken;
 
-        public AuthController(ApplicationDbContext db)
+        public AuthController(ApplicationDbContext db, IEmailSenderService emailSender, IGenerateTokenService generateToken)
         {
             _db = db;
+            _emailSender = emailSender;
+            _generateToken = generateToken;
             _passwordHasher = new PasswordHasher<User>();
 
         }
@@ -27,23 +31,27 @@ namespace BulkyBookWeb.Controllers
         //POST Register
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(Register obj )
+        public ActionResult Register(Register obj )
         {
             if (ModelState.IsValid)
             {
-                var user = new User();
-                user.Email = obj.Email; 
-                user.Password = obj.Password;
-                user.Username = obj.Username;
-
+                var user = new User
+                {
+                    Email = obj.Email,
+                    Username = obj.Username,
+                    EmailVerificationToken = _generateToken.GenerateToken(),
+                    IsEmailVerified = false
+                };
                 user.Password = _passwordHasher.HashPassword(user, obj.Password);
 
                 _db.Add(user);
                 _db.SaveChanges();
+
+                string href = "https://localhost:7223/Auth/Verify?token=" + user.EmailVerificationToken.ToString();
+                _emailSender.SendEmail(user.Email, "Email Verification", href);
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
+                TempData["success"] = "Account successfully created, check your email to verify your account";
                 return RedirectToAction("Index", "Home");
-
-
             }
             else
             {
@@ -92,6 +100,56 @@ namespace BulkyBookWeb.Controllers
                 TempData["error"] = "Invalid data type!";
                 return View(obj);
             }
+        }
+
+        //GET Verify Account
+        public IActionResult Verify(string? token)
+        {
+            string userId = HttpContext.Session.GetString("UserId");
+            var user = _db.Users.Find(int.Parse(userId));
+            if (token == null)
+            {
+                TempData["error"] = "Invalid Token";
+                return RedirectToAction("Index", "Home");
+            }
+            else if(userId == null)
+            {
+                TempData["error"] = "Must login first";
+                return RedirectToAction("Index", "Home");
+            }
+
+            //if (user.IsEmailVerified)
+            //{
+                Guid TokenRoute;
+                if (Guid.TryParse(token, out TokenRoute))
+                {
+
+                    if (TokenRoute.Equals(user.EmailVerificationToken))
+                    {
+                        user.IsEmailVerified = true;
+                        user.EmailVerificationToken = Guid.Empty;
+                        _db.SaveChanges();
+                        TempData["success"] = "Email verification success!";
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        TempData["error"] = "Invalid token!";
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                else
+                {
+                    TempData["error"] = "Invalid token!";
+                    return RedirectToAction("Index", "Home");
+                }
+            //}
+            //else
+            //{
+            //    TempData["error"] = "Email already verified";
+            //    return RedirectToAction("Index", "Home");
+            //}
+
         }
     }
 }

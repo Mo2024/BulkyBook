@@ -12,5 +12,11 @@ namespace BulkyBookWeb.Models
         public string Username { get; set; }
         [Required]
         public string Password { get; set; }
+        [Required]
+        public bool IsEmailVerified { get; set; }
+        public Guid EmailVerificationToken { get; set; }
+
+
+
     }
 }
