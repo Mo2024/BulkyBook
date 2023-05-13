@@ -3,6 +3,7 @@ using BulkyBookWeb.Models;
 using Microsoft.AspNetCore.Identity;
 using BulkyBookWeb.Data;
 
+
 namespace BulkyBookWeb.Controllers
 {
     public class AuthController : Controller
@@ -45,6 +46,49 @@ namespace BulkyBookWeb.Controllers
                 return RedirectToAction("Index", "Home");
 
 
+            }
+            else
+            {
+                TempData["error"] = "Invalid data type!";
+                return View(obj);
+            }
+        }
+
+        //GET Login
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        //POST Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Login(Login obj)
+        {
+            if (ModelState.IsValid)
+            {
+                var User = _db.Users.FirstOrDefault(u => u.Username == obj.Username);
+                //var User = _db.Users.Find(obj.Username);
+                if(User == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    var passwordHasher = new PasswordHasher<User>();
+                    var passwordVerificationResult = passwordHasher.VerifyHashedPassword(User, User.Password, obj.Password);
+                    if (passwordVerificationResult == PasswordVerificationResult.Success)
+                    {
+                        HttpContext.Session.SetString("UserId", User.Id.ToString());
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        TempData["error"] = "Invalid Password!";
+                        return View(obj);
+                    }
+
+                }
             }
             else
             {
