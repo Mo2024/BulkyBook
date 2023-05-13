@@ -38,6 +38,9 @@ namespace BulkyBookWeb.Controllers
                 _db.Add(user);
                 _db.SaveChanges();
 
+                HttpContext.Session.SetString("UserId", user.Id.ToString());
+
+
 
                 return RedirectToAction("Index", "Home");
 
