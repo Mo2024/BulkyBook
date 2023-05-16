@@ -14,7 +14,7 @@ builder.Services.AddTransient<IEmailSenderService, EmailSenderService>();
 builder.Services.AddTransient<IGenerateTokenService, GenerateTokenService>();   
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddTransient<AdminRoleMiddleware>();
+//builder.Services.AddTransient<AdminRoleMiddleware>();
 
 var app = builder.Build();
 
@@ -27,7 +27,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseSession();
-app.UseMiddleware<AdminRoleMiddleware>();
+//app.UseMiddleware<AdminRoleMiddleware>();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

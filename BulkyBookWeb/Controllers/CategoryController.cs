@@ -31,11 +31,6 @@ namespace BulkyBookWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category obj)
         {
-            if(obj.Name == obj.DisplayOrder.ToString())
-            {
-                ModelState.AddModelError("CustomError", "The Display Order cannot exactly match the Name.");
-                //ModelState.AddModelError("name", "The Display Order cannot exactly match the Name.");
-            }
             if (ModelState.IsValid)
             {
                 _db.Categories.Add(obj);
@@ -67,11 +62,6 @@ namespace BulkyBookWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Category obj)
         {
-            if (obj.Name == obj.DisplayOrder.ToString())
-            {
-                ModelState.AddModelError("CustomError", "The Display Order cannot exactly match the Name.");
-                //ModelState.AddModelError("name", "The Display Order cannot exactly match the Name.");
-            }
             if (ModelState.IsValid)
             {
                 _db.Categories.Update(obj);

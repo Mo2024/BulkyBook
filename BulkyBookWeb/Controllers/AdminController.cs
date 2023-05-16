@@ -3,6 +3,7 @@ using BulkyBookWeb.Models;
 using BulkyBookWeb.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace BulkyBookWeb.Controllers
 {
@@ -14,9 +15,25 @@ namespace BulkyBookWeb.Controllers
         {
             _db = db;
         }
-        public IActionResult Test()
+
+        public IActionResult Index()
         {
-            return RedirectToAction("Index", "Home");
+            return View();
+        }
+
+        //[HttpGet("Create/Product")]
+        public IActionResult CreateProduct()
+        {
+            var CreateProductViewModel = new CreateProductViewModel
+            {
+                Product = new Product(),
+                categories = _db.Categories.ToList()
+
+            };
+
+
+            return View(CreateProductViewModel);
+
         }
     }
 }
