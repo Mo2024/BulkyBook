@@ -17,8 +17,12 @@ public class Product
     [Range(0, double.MaxValue, ErrorMessage = "Price must be a non-negative number")]
     [DataType(DataType.Currency)]
     public decimal Price { get; set; }
+
     [Required(ErrorMessage = "Image data is required")]
-    public byte[] ImageData { get; set; }
+    [NotMapped]
+    public List<IFormFile> ImageData { get; set; }
+
+    public ICollection<Image> Images { get; set; }
 
     public int CategoryID { get; set; }
 

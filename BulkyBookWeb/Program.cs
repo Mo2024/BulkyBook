@@ -2,6 +2,9 @@ using BulkyBookWeb.Data;
 using BulkyBookWeb.Middleware;
 using BulkyBookWeb.Services;
 using Microsoft.EntityFrameworkCore;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using dotenv.net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,11 @@ builder.Services.AddTransient<IGenerateTokenService, GenerateTokenService>();
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 //builder.Services.AddTransient<AdminRoleMiddleware>();
+DotEnv.Load(options: new DotEnvOptions(probeForEnv: true));
+Cloudinary cloudinary = new Cloudinary(Environment.GetEnvironmentVariable("CLOUDINARY_URL"));
+cloudinary.Api.Secure = true;
+builder.Services.AddSingleton(cloudinary);
+builder.Services.AddScoped<UploadImageService>();
 
 var app = builder.Build();
 

@@ -13,7 +13,7 @@
 
 		<div class="mb-3">
 			<label asp-for="Product.CategoryID">Category</label>
-			<select asp-for="Product.CategoryID" asp-items="@(new SelectList(Model.categories, "Id", "Name"))" class="form-select" aria-label="Default select example">
+			<select asp-for="Product.CategoryID" asp-items="@(new SelectList(Model.categories, nameof(Category.Id), nameof(Category.Name)))" class="form-select" aria-label="Default select example">
 				<option value="">Open this select menu</option>
 			</select>
 			<span asp-validation-for="Product.CategoryID" class="text-danger"></span>
@@ -39,16 +39,10 @@
 		</div>
 
 		<div class="mb-3">
-			<label asp-for="Product.Price">Price</label>
-			<input asp-for="Product.Price" class="form-control" />
-			<span asp-validation-for="Product.Price" class="text-danger"></span>
-		</div>
-
-		<div class="mb-3">
-			<label asp-for="Product.ImageData">Image</label>
+			<label asp-for="Product.ImageData">Images</label>
 			<input asp-for="Product.ImageData" type="file" class="form-control-file" />
 			<span asp-validation-for="Product.ImageData" class="text-danger"></span>
-		</div>
+		</div>after
 
 		<button type="submit" class="btn btn-primary" style="width:150px">Create</button>
 	</div>
