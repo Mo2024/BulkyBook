@@ -40,7 +40,8 @@ namespace BulkyBookWeb.Controllers
                     Email = obj.Email,
                     Username = obj.Username,
                     EmailVerificationToken = _generateToken.GenerateToken(),
-                    IsEmailVerified = false
+                    IsEmailVerified = false,
+                    Role = Role.Admin
                 };
                 user.Password = _passwordHasher.HashPassword(user, obj.Password);
 
@@ -50,6 +51,7 @@ namespace BulkyBookWeb.Controllers
                 string href = "https://localhost:7223/Auth/Verify?token=" + user.EmailVerificationToken.ToString();
                 _emailSender.SendEmail(user.Email, "Email Verification", href);
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
+                HttpContext.Session.SetString("UserRole", user.Role.ToString());
                 TempData["success"] = "Account successfully created, check your email to verify your account";
                 return RedirectToAction("Index", "Home");
             }
@@ -85,6 +87,7 @@ namespace BulkyBookWeb.Controllers
                     if (passwordVerificationResult == PasswordVerificationResult.Success)
                     {
                         HttpContext.Session.SetString("UserId", User.Id.ToString());
+                        HttpContext.Session.SetString("UserRole", User.Role.ToString());
                         return RedirectToAction("Index", "Home");
                     }
                     else

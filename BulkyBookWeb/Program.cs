@@ -1,4 +1,5 @@
 using BulkyBookWeb.Data;
+using BulkyBookWeb.Middleware;
 using BulkyBookWeb.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,7 @@ builder.Services.AddTransient<IEmailSenderService, EmailSenderService>();
 builder.Services.AddTransient<IGenerateTokenService, GenerateTokenService>();   
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<AdminRoleMiddleware>();
 
 var app = builder.Build();
 
@@ -25,7 +27,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseSession();
-
+app.UseMiddleware<AdminRoleMiddleware>();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

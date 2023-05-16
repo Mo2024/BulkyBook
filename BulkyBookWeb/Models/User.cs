@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Data;
 
 namespace BulkyBookWeb.Models
 {
@@ -15,6 +16,9 @@ namespace BulkyBookWeb.Models
         [Required]
         public bool IsEmailVerified { get; set; }
         public Guid EmailVerificationToken { get; set; }
+
+        public Role Role { get; set; }
+
 
 
 
